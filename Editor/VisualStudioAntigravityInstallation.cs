@@ -17,10 +17,10 @@ using Debug = UnityEngine.Debug;
 
 namespace Microsoft.Unity.VisualStudio.Editor
 {
-	internal class VisualStudioCursorInstallation : VisualStudioInstallation
+	internal class VisualStudioAntigravityInstallation : VisualStudioInstallation
 	{
 		private static readonly IGenerator _generator = new SdkStyleProjectGeneration();
-		internal const string ReuseExistingWindowKey = "cursor_reuse_existing_window";
+		internal const string ReuseExistingWindowKey = "antigravity_reuse_existing_window";
 
 		public override bool SupportsAnalyzers
 		{
@@ -71,11 +71,11 @@ namespace Microsoft.Unity.VisualStudio.Editor
 		private static bool IsCandidateForDiscovery(string path)
 		{
 #if UNITY_EDITOR_OSX
-			return Directory.Exists(path) && Regex.IsMatch(path, ".*Cursor.*.app$", RegexOptions.IgnoreCase);
+			return Directory.Exists(path) && Regex.IsMatch(path, ".*Antigravity.*.app$", RegexOptions.IgnoreCase);
 #elif UNITY_EDITOR_WIN
-			return File.Exists(path) && Regex.IsMatch(path, ".*Cursor.*.exe$", RegexOptions.IgnoreCase);
+			return File.Exists(path) && Regex.IsMatch(path, ".*Antigravity.*.exe$", RegexOptions.IgnoreCase);
 #else
-			return File.Exists(path) && path.EndsWith("cursor", StringComparison.OrdinalIgnoreCase);
+			return File.Exists(path) && path.EndsWith("antigravity", StringComparison.OrdinalIgnoreCase);
 #endif
 		}
 
@@ -133,10 +133,10 @@ namespace Microsoft.Unity.VisualStudio.Editor
 			}
 
 			isPrerelease = isPrerelease || editorPath.ToLower().Contains("insider");
-			installation = new VisualStudioCursorInstallation()
+			installation = new VisualStudioAntigravityInstallation()
 			{
 				IsPrerelease = isPrerelease,
-				Name = "Cursor" + (isPrerelease ? " - Insider" : string.Empty) + (version != null ? $" [{version.ToString(3)}]" : string.Empty),
+				Name = "Antigravity" + (isPrerelease ? " - Insider" : string.Empty) + (version != null ? $" [{version.ToString(3)}]" : string.Empty),
 				Path = editorPath,
 				Version = version ?? new Version()
 			};
@@ -151,18 +151,22 @@ namespace Microsoft.Unity.VisualStudio.Editor
 #if UNITY_EDITOR_WIN
 			var localAppPath = IOPath.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs");
 			var programFiles = IOPath.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+			var programFilesX86 = IOPath.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86));
 
-			foreach (var basePath in new[] { localAppPath, programFiles }) {
-				candidates.Add(IOPath.Combine(basePath, "cursor", "cursor.exe"));
+			foreach (var basePath in new[] { localAppPath, programFiles, programFilesX86 }) {
+				candidates.Add(IOPath.Combine(basePath, "Antigravity", "Antigravity.exe"));
+				candidates.Add(IOPath.Combine(basePath, "antigravity", "antigravity.exe"));
 			}
 #elif UNITY_EDITOR_OSX
 			var appPath = IOPath.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
-			candidates.AddRange(Directory.EnumerateDirectories(appPath, "Cursor*.app"));
+			candidates.AddRange(Directory.EnumerateDirectories(appPath, "Antigravity*.app"));
+			candidates.AddRange(Directory.EnumerateDirectories(appPath, "antigravity*.app"));
 #elif UNITY_EDITOR_LINUX
 			// Well known locations
-			candidates.Add("/usr/bin/cursor");
-			candidates.Add("/bin/cursor");
-			candidates.Add("/usr/local/bin/cursor");
+			candidates.Add("/usr/bin/antigravity");
+			candidates.Add("/usr/bin/Antigravity");
+			candidates.Add("/bin/antigravity");
+			candidates.Add("/usr/local/bin/antigravity");
 
 			// Preference ordered base directories relative to which desktop files should be searched
 			candidates.AddRange(GetXdgCandidates());
@@ -176,7 +180,7 @@ namespace Microsoft.Unity.VisualStudio.Editor
 		}
 
 #if UNITY_EDITOR_LINUX
-		private static readonly Regex DesktopFileExecEntry = new Regex(@"Exec=(\S+)", RegexOptions.Singleline | RegexOptions.Compiled);
+		private static readonly Regex DesktopFileExecEntry = new Regex("Exec=(\\S+)", RegexOptions.Singleline | RegexOptions.Compiled);
 
 		private static IEnumerable<string> GetXdgCandidates()
 		{
@@ -191,7 +195,7 @@ namespace Microsoft.Unity.VisualStudio.Editor
 
 				try
 				{
-					var desktopFile = IOPath.Combine(dir, "applications/code.desktop");
+					var desktopFile = IOPath.Combine(dir, "applications/antigravity.desktop");
 					if (!File.Exists(desktopFile))
 						continue;
 
@@ -500,7 +504,7 @@ namespace Microsoft.Unity.VisualStudio.Editor
 			}
 		}
 
-		private Process FindRunningCursorWithSolution(string solutionPath)
+		private Process FindRunningAntigravityWithSolution(string solutionPath)
 		{
 			var normalizedTargetPath = solutionPath.Replace('\\', '/').TrimEnd('/').ToLowerInvariant();
 
@@ -518,20 +522,20 @@ namespace Microsoft.Unity.VisualStudio.Editor
 
 			// Get process name list based on different operating systems
 #if UNITY_EDITOR_OSX
-			processes.AddRange(Process.GetProcessesByName("Cursor"));
-			processes.AddRange(Process.GetProcessesByName("Cursor Helper"));
+			processes.AddRange(Process.GetProcessesByName("Antigravity"));
+			processes.AddRange(Process.GetProcessesByName("Antigravity Helper"));
 #elif UNITY_EDITOR_LINUX
-			processes.AddRange(Process.GetProcessesByName("cursor"));
-			processes.AddRange(Process.GetProcessesByName("Cursor"));
+			processes.AddRange(Process.GetProcessesByName("antigravity"));
+			processes.AddRange(Process.GetProcessesByName("Antigravity"));
 #else
-			processes.AddRange(Process.GetProcessesByName("cursor"));
+			processes.AddRange(Process.GetProcessesByName("antigravity"));
 #endif
 
 			foreach (var process in processes)
 			{
 				try
 				{
-					var workspaces = ProcessRunner.GetProcessWorkspaces(process, new[] { "cursor", "Cursor" }, "Cursor");
+					var workspaces = ProcessRunner.GetProcessWorkspaces(process, new[] { "antigravity", "Antigravity" }, "Antigravity");
 					if (workspaces != null && workspaces.Length > 0)
 					{
 						foreach (var workspace in workspaces)
@@ -559,7 +563,7 @@ namespace Microsoft.Unity.VisualStudio.Editor
 				}
 				catch (Exception ex)
 				{
-					Debug.LogError($"[Cursor] Error checking process: {ex}");
+					Debug.LogError($"[Antigravity] Error checking process: {ex}");
 					continue;
 				}
 			}
@@ -589,7 +593,7 @@ namespace Microsoft.Unity.VisualStudio.Editor
 
 			if (EditorPrefs.GetBool(ReuseExistingWindowKey, false))
 			{
-				var existingProcess = FindRunningCursorWithSolution(directory);
+				var existingProcess = FindRunningAntigravityWithSolution(directory);
 				if (existingProcess != null)
 				{
 					try
@@ -603,7 +607,7 @@ namespace Microsoft.Unity.VisualStudio.Editor
 					}
 					catch (Exception ex)
 					{
-						Debug.LogError($"[Cursor] Error using existing instance: {ex}");
+						Debug.LogError($"[Antigravity] Error using existing instance: {ex}");
 					}
 				}
 			}

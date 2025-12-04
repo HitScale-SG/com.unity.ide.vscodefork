@@ -116,95 +116,109 @@ namespace Microsoft.Unity.VisualStudio.Editor
 			sb?.Append(data);
 		}
 
-		public static string[] GetProcessWorkspaces(Process process)
+		public static string[] GetProcessWorkspaces(Process process, IEnumerable<string> productDirectoryNames, string logTag)
 		{
-			if (process == null)
+			if (process == null || productDirectoryNames == null)
 				return null;
 
 			try
 			{
 				var workspaces = new List<string>();
 				var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-				string cursorStoragePath;
 
-#if UNITY_EDITOR_OSX
-				cursorStoragePath = Path.Combine(userProfile, "Library", "Application Support", "cursor", "User", "workspaceStorage");
-#elif UNITY_EDITOR_LINUX
-				cursorStoragePath = Path.Combine(userProfile, ".config", "Cursor", "User", "workspaceStorage");
-#else
-				cursorStoragePath = Path.Combine(userProfile, "AppData", "Roaming", "cursor", "User", "workspaceStorage");
-#endif
-				
-				if (Directory.Exists(cursorStoragePath))
+				foreach (var productDirectoryName in productDirectoryNames.Where(n => !string.IsNullOrWhiteSpace(n)))
 				{
-					foreach (var workspaceDir in Directory.GetDirectories(cursorStoragePath))
-					{
-						try
-						{
-							var workspaceStatePath = Path.Combine(workspaceDir, "workspace.json");
-							if (File.Exists(workspaceStatePath))
-							{
-								var content = File.ReadAllText(workspaceStatePath);
-								if (!string.IsNullOrEmpty(content))
-								{
-									var workspace = JSONNode.Parse(content);
-									if (workspace != null)
-									{
-										var folder = workspace["folder"];
-										if (folder != null && !string.IsNullOrEmpty(folder.Value))
-										{
-											var workspacePath = folder.Value;
-											if (workspacePath.StartsWith("file:///"))
-											{
-												workspacePath = Uri.UnescapeDataString(workspacePath.Substring(8));
-												workspaces.Add(workspacePath);
-											}
-										}
-									}
-								}
-							}
+					var storagePath = GetWorkspaceStoragePath(userProfile, productDirectoryName);
+					if (string.IsNullOrEmpty(storagePath))
+						continue;
 
-							var windowStatePath = Path.Combine(workspaceDir, "window.json");
-							if (File.Exists(windowStatePath))
-							{
-								var content = File.ReadAllText(windowStatePath);
-								if (!string.IsNullOrEmpty(content))
-								{
-									var windowState = JSONNode.Parse(content);
-									if (windowState != null)
-									{
-										var workspace = windowState["workspace"];
-										if (workspace != null && !string.IsNullOrEmpty(workspace.Value))
-										{
-											var workspacePath = workspace.Value;
-											if (workspacePath.StartsWith("file:///"))
-											{
-												workspacePath = Uri.UnescapeDataString(workspacePath.Substring(8));
-												workspaces.Add(workspacePath);
-											}
-										}
-									}
-								}
-							}
-						}
-						catch (Exception ex)
-						{
-							Debug.LogWarning($"[Cursor] Error reading workspace state file: {ex.Message}");
-							continue;
-						}
-					}
-				}
-				else
-				{
-					Debug.LogWarning($"[Cursor] Workspace storage directory not found: {cursorStoragePath}");
+					CollectWorkspaces(storagePath, workspaces, logTag);
 				}
 
 				return workspaces.Distinct().ToArray();
 			}
 			catch (Exception ex)
 			{
-				Debug.LogError($"[Cursor] Error getting workspace directory: {ex.Message}");
+				Debug.LogError($"[{logTag}] Error getting workspace directory: {ex.Message}");
 				return null;
+			}
+		}
+
+		private static string GetWorkspaceStoragePath(string userProfile, string productDirectoryName)
+		{
+#if UNITY_EDITOR_OSX
+			return Path.Combine(userProfile, "Library", "Application Support", productDirectoryName, "User", "workspaceStorage");
+#elif UNITY_EDITOR_LINUX
+			return Path.Combine(userProfile, ".config", productDirectoryName, "User", "workspaceStorage");
+#else
+			return Path.Combine(userProfile, "AppData", "Roaming", productDirectoryName, "User", "workspaceStorage");
+#endif
+		}
+
+		private static void CollectWorkspaces(string storagePath, ICollection<string> workspaces, string logTag)
+		{
+			if (Directory.Exists(storagePath))
+			{
+				foreach (var workspaceDir in Directory.GetDirectories(storagePath))
+				{
+					try
+					{
+						var workspaceStatePath = Path.Combine(workspaceDir, "workspace.json");
+						if (File.Exists(workspaceStatePath))
+						{
+							var content = File.ReadAllText(workspaceStatePath);
+							if (!string.IsNullOrEmpty(content))
+							{
+								var workspace = JSONNode.Parse(content);
+								if (workspace != null)
+								{
+									var folder = workspace["folder"];
+									if (folder != null && !string.IsNullOrEmpty(folder.Value))
+									{
+										var workspacePath = folder.Value;
+										if (workspacePath.StartsWith("file:///"))
+										{
+											workspacePath = Uri.UnescapeDataString(workspacePath.Substring(8));
+											workspaces.Add(workspacePath);
+										}
+									}
+								}
+							}
+						}
+
+						var windowStatePath = Path.Combine(workspaceDir, "window.json");
+						if (File.Exists(windowStatePath))
+						{
+							var content = File.ReadAllText(windowStatePath);
+							if (!string.IsNullOrEmpty(content))
+							{
+								var windowState = JSONNode.Parse(content);
+								if (windowState != null)
+								{
+									var workspace = windowState["workspace"];
+									if (workspace != null && !string.IsNullOrEmpty(workspace.Value))
+									{
+										var workspacePath = workspace.Value;
+										if (workspacePath.StartsWith("file:///"))
+										{
+											workspacePath = Uri.UnescapeDataString(workspacePath.Substring(8));
+											workspaces.Add(workspacePath);
+										}
+									}
+								}
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						Debug.LogWarning($"[{logTag}] Error reading workspace state file: {ex.Message}");
+						continue;
+					}
+				}
+			}
+			else
+			{
+				Debug.LogWarning($"[{logTag}] Workspace storage directory not found: {storagePath}");
 			}
 		}
 	}

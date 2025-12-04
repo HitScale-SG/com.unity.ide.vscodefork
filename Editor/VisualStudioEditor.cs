@@ -132,15 +132,8 @@ namespace Microsoft.Unity.VisualStudio.Editor
 			GUILayout.Label($"<size=10><color=grey>{package.displayName} v{package.version} enabled</color></size>", style);
 			GUILayout.EndHorizontal();
 
-			if (installation is VisualStudioCursorInstallation)
-			{
-				var reuseWindow = EditorPrefs.GetBool(VisualStudioCursorInstallation.ReuseExistingWindowKey, false);
-				var newReuseWindow = EditorGUILayout.Toggle(new GUIContent("Reuse existing Cursor window", "When enabled, opens files in an existing Cursor window if found. When disabled, always opens a new window."), reuseWindow);
-				if (newReuseWindow != reuseWindow)
-					EditorPrefs.SetBool(VisualStudioCursorInstallation.ReuseExistingWindowKey, newReuseWindow);
-				
-				EditorGUILayout.Space();
-			}
+			DrawReuseWindowToggle<VisualStudioCursorInstallation>(installation, VisualStudioCursorInstallation.ReuseExistingWindowKey, "Cursor");
+			DrawReuseWindowToggle<VisualStudioAntigravityInstallation>(installation, VisualStudioAntigravityInstallation.ReuseExistingWindowKey, "Antigravity");
 
 			EditorGUILayout.LabelField("Generate .csproj files for:");
 			EditorGUI.indentLevel++;
@@ -154,6 +147,19 @@ namespace Microsoft.Unity.VisualStudio.Editor
 			SettingsButton(ProjectGenerationFlag.PlayerAssemblies, "Player projects", "For each player project generate an additional csproj with the name 'project-player.csproj'", installation);
 			RegenerateProjectFiles(installation);
 			EditorGUI.indentLevel--;
+		}
+
+		private static void DrawReuseWindowToggle<TInstallation>(IVisualStudioInstallation installation, string prefsKey, string productName) where TInstallation : IVisualStudioInstallation
+		{
+			if (!(installation is TInstallation))
+				return;
+
+			var reuseWindow = EditorPrefs.GetBool(prefsKey, false);
+			var newReuseWindow = EditorGUILayout.Toggle(new GUIContent($"Reuse existing {productName} window", $"When enabled, opens files in an existing {productName} window if found. When disabled, always opens a new window."), reuseWindow);
+			if (newReuseWindow != reuseWindow)
+				EditorPrefs.SetBool(prefsKey, newReuseWindow);
+
+			EditorGUILayout.Space();
 		}
 
 		private static void RegenerateProjectFiles(IVisualStudioInstallation installation)

@@ -1,4 +1,17 @@
-# Code Editor Package for Cursor
+# Code Editor Package for Antigravity
+
+## [2.2.0] - 2025-12-04
+
+Integration:
+
+- Rename package to `com.unity.ide.vscodefork` to cover VSCode-based forks (Antigravity, Cursor)
+
+## [2.1.0] - 2025-12-04
+
+Integration:
+
+- Add Antigravity IDE discovery, launch, and reuse-window preference
+- Share workspace detection for VS Code based forks
 
 ## [2.0.27] - 2025-11-02
 

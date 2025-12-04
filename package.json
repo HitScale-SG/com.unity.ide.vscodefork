@@ -1,14 +1,14 @@
 {
-  "name": "com.boxqkrtm.ide.cursor",
-  "displayName": "Cursor Editor",
-  "description": "Cursor editor integration for supporting Cursor as code editor for unity. Adds support for generating csproj files for intellisense purposes, auto discovery of installations, etc.",
-  "version": "2.0.27",
+  "name": "com.unity.ide.vscodefork",
+  "displayName": "VSCode Fork Editor",
+  "description": "Unity code editor integration for VSCode-based forks (Antigravity, Cursor). Generates csproj/solution files, auto-discovers installations, and launches editors with reuse-window options.",
+  "version": "2.2.0",
   "unity": "2019.4",
   "unityRelease": "25f1",
   "dependencies": {
     "com.unity.test-framework": "1.1.9"
   },
   "_upm": {
-    "changelog": "Integration:\n\n- Add Multiple or Single Cursor Instance Options"
+    "changelog": "Integration:\n\n- Rename package to com.unity.ide.vscodefork and support VSCode-based forks (Antigravity, Cursor)"
   }
 }
