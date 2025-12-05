@@ -13,6 +13,8 @@ namespace Microsoft.Unity.VisualStudio.Editor
 	{
 		public static IEnumerable<IVisualStudioInstallation> GetVisualStudioInstallations()
 		{
+			foreach (var installation in VisualStudioTraeInstallation.GetVisualStudioInstallations())
+				yield return installation;
 			foreach (var installation in VisualStudioAntigravityInstallation.GetVisualStudioInstallations())
 				yield return installation;
 			foreach (var installation in VisualStudioCursorInstallation.GetVisualStudioInstallations())
@@ -25,6 +27,8 @@ namespace Microsoft.Unity.VisualStudio.Editor
 		{
 			try
 			{
+				if (VisualStudioTraeInstallation.TryDiscoverInstallation(editorPath, out installation))
+					return true;
 				if (VisualStudioAntigravityInstallation.TryDiscoverInstallation(editorPath, out installation))
 					return true;
 				if (VisualStudioCursorInstallation.TryDiscoverInstallation(editorPath, out installation))
@@ -42,6 +46,7 @@ namespace Microsoft.Unity.VisualStudio.Editor
 
 		public static void Initialize()
 		{
+			VisualStudioTraeInstallation.Initialize();
 			VisualStudioAntigravityInstallation.Initialize();
 			VisualStudioCursorInstallation.Initialize();
 			VisualStudioCodiumInstallation.Initialize();

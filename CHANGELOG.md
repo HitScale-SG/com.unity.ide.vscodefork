@@ -1,5 +1,11 @@
 # Code Editor Package for Antigravity
 
+## [2.3.0] - 2025-12-06
+
+Integration:
+
+- Add Trae IDE discovery, workspace reuse detection, and reuse-window preference alongside other VSCode forks
+
 ## [2.2.0] - 2025-12-04
 
 Integration:

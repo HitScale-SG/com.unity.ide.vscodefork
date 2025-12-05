@@ -132,6 +132,7 @@ namespace Microsoft.Unity.VisualStudio.Editor
 			GUILayout.Label($"<size=10><color=grey>{package.displayName} v{package.version} enabled</color></size>", style);
 			GUILayout.EndHorizontal();
 
+			DrawReuseWindowToggle<VisualStudioTraeInstallation>(installation, VisualStudioTraeInstallation.ReuseExistingWindowKey, "Trae");
 			DrawReuseWindowToggle<VisualStudioCursorInstallation>(installation, VisualStudioCursorInstallation.ReuseExistingWindowKey, "Cursor");
 			DrawReuseWindowToggle<VisualStudioAntigravityInstallation>(installation, VisualStudioAntigravityInstallation.ReuseExistingWindowKey, "Antigravity");
 
