@@ -21,6 +21,8 @@ namespace Microsoft.Unity.VisualStudio.Editor
 				yield return installation;
 			foreach (var installation in VisualStudioCodiumInstallation.GetVisualStudioInstallations())
 				yield return installation;
+			foreach (var installation in VisualStudioZedInstallation.GetVisualStudioInstallations())
+				yield return installation;
 		}
 
 		public static bool TryDiscoverInstallation(string editorPath, out IVisualStudioInstallation installation)
@@ -34,6 +36,8 @@ namespace Microsoft.Unity.VisualStudio.Editor
 				if (VisualStudioCursorInstallation.TryDiscoverInstallation(editorPath, out installation))
 					return true;
 				if (VisualStudioCodiumInstallation.TryDiscoverInstallation(editorPath, out installation))
+					return true;
+				if (VisualStudioZedInstallation.TryDiscoverInstallation(editorPath, out installation))
 					return true;
 			}
 			catch (IOException)
@@ -50,6 +54,7 @@ namespace Microsoft.Unity.VisualStudio.Editor
 			VisualStudioAntigravityInstallation.Initialize();
 			VisualStudioCursorInstallation.Initialize();
 			VisualStudioCodiumInstallation.Initialize();
+			VisualStudioZedInstallation.Initialize();
 		}
 	}
 }

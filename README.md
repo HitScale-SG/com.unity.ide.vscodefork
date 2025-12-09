@@ -7,5 +7,5 @@
 - Done
 
 > **Important notice for migrations**  
-> The package id is now `com.unity.ide.vscodefork`, covering VSCode-based forks (Antigravity, Cursor, Trae).  
-> Remove any older `com.boxqkrtm.ide.cursor`, `com.hitscale.ide.antigravity`, or `com.unity.ide.trae` package before installing to avoid id conflicts.
+> The package id is now `com.unity.ide.vscodefork`, covering VSCode-based forks (Antigravity, Cursor, Trae) plus Zed (macOS/Linux).  
+- Zed support auto-discovers the CLI, syncs solutions, and seeds `.zed/settings.json` with Unity-friendly file scan exclusions.

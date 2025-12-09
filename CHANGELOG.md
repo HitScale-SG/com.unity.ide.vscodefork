@@ -1,5 +1,11 @@
 # Code Editor Package for Antigravity
 
+## [2.4.0] - 2025-12-09
+
+Integration:
+
+- Add Zed editor discovery (macOS/Linux), launch flow, and default .zed settings bootstrap
+
 ## [2.3.0] - 2025-12-06
 
 Integration:

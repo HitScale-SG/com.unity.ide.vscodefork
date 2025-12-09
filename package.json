@@ -1,14 +1,14 @@
 {
   "name": "com.unity.ide.vscodefork",
-  "displayName": "VSCode Fork Editor",
-  "description": "Unity code editor integration for VSCode-based forks (Antigravity, Cursor, Trae). Generates csproj/solution files, auto-discovers installations, and launches editors with reuse-window options.",
-  "version": "2.3.0",
+  "displayName": "VSCode Fork & Zed Editor",
+  "description": "Unity code editor integration for VSCode-based forks (Antigravity, Cursor, Trae) and Zed. Generates csproj/solution files, auto-discovers installations, and launches editors with reuse-window options.",
+  "version": "2.4.0",
   "unity": "2019.4",
   "unityRelease": "25f1",
   "dependencies": {
     "com.unity.test-framework": "1.1.9"
   },
   "_upm": {
-    "changelog": "Integration:\n\n- Add Trae fork discovery, launch, and reuse-window preference\n- Rename package to com.unity.ide.vscodefork and support VSCode-based forks (Antigravity, Cursor)"
+    "changelog": "Integration:\n\n- Add Zed discovery and launch support (macOS/Linux) and seed .zed settings.json\n- Add Trae fork discovery, launch, and reuse-window preference\n- Rename package to com.unity.ide.vscodefork and support VSCode-based forks (Antigravity, Cursor)"
   }
 }
